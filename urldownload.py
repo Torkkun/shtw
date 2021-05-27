@@ -44,33 +44,41 @@ def acountimagedl(i):
         file.write(image)
 
 
-def mediadl(i):#ユーザー名が同じで別ツイートにそれぞれ画像があった場合の判定をかかなければならない
+def mediadl(i):
     try:
         mediakey = data["data"][i]["attachments"]["media_keys"]
-        
-        #ここにダウンロードした画像があるかどうか確認しもしあればfilenumをその個数にするifで確認しあれば個数に初期化elseで0に初期化
         for mkey in mediakey:
             m = mediakeycheck(mkey)
-            url = data["includes"]["media"][m]["url"]
-            authorid = data["data"][i]["author_id"]
-            lpath = idcheck(authorid)
-            iconname = data["includes"]["users"][lpath]["username"]
-            filenum = umlist[iconname]
-            file_name = "投稿画像1/{}image{}.jpg".format(iconname, filenum)
-            response = requests.get(url)
-            image = response.content
-            with open(file_name, mode="wb") as file:
-                file.write(image)
+            if data["includes"]["media"][m]["type"] == "photo":
+                url = data["includes"]["media"][m]["url"]
+                authorid = data["data"][i]["author_id"]
+                lpath = idcheck(authorid)
+                iconname = data["includes"]["users"][lpath]["username"]
+                filenum = umlist[iconname]
+                file_name = "投稿画像1/{}image{}.jpg".format(iconname, filenum)
+                response = requests.get(url)
+                image = response.content
+                with open(file_name, mode="wb") as file:
+                    file.write(image)
         
-            umlist[iconname] += 1
+                umlist[iconname] += 1
     except KeyError:
         return
+
+def countjpg():
+    count = 0
+    for i in userlist:
+        count += umlist[i]
+
+    return count
 
 
 def main():
     for i in range(count):
         acountimagedl(i)
         mediadl(i)
+        
+    print("jpg画像の合計は" + str(countjpg()))
     #print(data.keys())
     
 

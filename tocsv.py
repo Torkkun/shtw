@@ -43,9 +43,12 @@ def main():
         if "attachments" in data["data"][i].keys():
             newnum = len(data["data"][i]["attachments"]["media_keys"])
             for i in range(umlist[userid], newnum):
-                mediapath.append(userid+"image{}".format(i))
-                
-            umlist[userid] += newnum    #mediakeyの個数を更新
+                filename = userid + "image{}.jpg".format(i)
+                if filename in media:
+                    mediapath.append(filename)
+                    umlist[userid] += newnum    #mediakeyの個数を更新
+                else:
+                    continue
 
         format = {'ツイートリンク': "https://twitter.com/{}/status/{}".format(userid, TweetLinkid), 'ツイート内容': "{}".format(Tweet), 'bio文': "{}".format(bio), '投稿時間': "{}".format(TweetTime), 'アイコン画像のpath': "{}".format(iconpath), "投稿画像のpath": "{}".format(mediapath)}
         #print(format)

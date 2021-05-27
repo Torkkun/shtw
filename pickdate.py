@@ -6,7 +6,7 @@ bearer_token = config.Bearer_Token
 
 search_url = "https://api.twitter.com/2/tweets/search/recent"
 
-query_params = {'query': '(プレゼント企画 -is:retweet -is:reply)',   #検索クエリリツイートとリプライを含まない
+query_params = {'query': '(プレゼント企画 OR 配布企画) -is:retweet -is:reply',   #検索クエリリツイートとリプライを含まない
                 'tweet.fields': 'author_id,created_at',             #ツイートの作成日時
                 'media.fields': 'url',                              #ツイートの添付画像のurl
                 'expansions': 'author_id,attachments.media_keys',   #includesのmedia
@@ -36,7 +36,7 @@ def main():
     file = json.dumps(json_response, indent=4, ensure_ascii=False, sort_keys=True) #プレゼント企画のツイートを拾う
     #file = profile.main()
     #print(file)
-    with open('test.json', mode='wt', encoding='utf-8') as file:
+    with open('test1.json', mode='wt', encoding='utf-8') as file:
         json.dump(json_response, file, indent=4, ensure_ascii=False, sort_keys=True)
     
 
