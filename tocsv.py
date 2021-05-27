@@ -2,18 +2,21 @@ import os
 import json
 import csv
 
-from requests import NullHandler
-
-media = [i for i in os.listdir("投稿画像/")]
-icon = [i for i in os.listdir("アイコン画像/")]
+media = [i for i in os.listdir("投稿画像1/")]
+icon = [i for i in os.listdir("アイコン画像1/")]
 
 data = dict()
-with open('test.json', mode='rt', encoding='utf-8') as file:
+with open('test1.json', mode='rt', encoding='utf-8') as file:
     data = json.load(file)
 
-checkid = [bioc["id"] for bioc in data["includes"]["users"]]
+medianum = len(data["includes"]["media"])
 
-count = len(data["data"])
+checkid = [bioc["id"] for bioc in data["includes"]["users"]] #useridcheck用のリスト
+
+userlist = set([uid["username"] for uid in data["includes"]["users"]])#usernameのリスト
+umlist = {username: 0 for username in userlist}#それぞれのユーザーのメディア数
+
+count = len(data["data"])#取得データ個数
 
 def idcheck(id):
     if id in checkid:
@@ -30,12 +33,19 @@ def main():
         userid = data["includes"]["users"][lpath]["username"]
         TweetLinkid = data["data"][i]["id"]
         Tweet = data["data"][i]["text"]
-        Tweet = Tweet.replace('\n', '').replace('\u3000','')
+        #Tweet = Tweet.replace('\n', '').replace('\u3000','')
+        Tweet = Tweet.replace('\u3000','')
         bio = data["includes"]["users"][lpath]["description"]
         TweetTime = data["data"][i]["created_at"]
         #TweetTime = TweetTime.replace('.000Z', '')
         iconpath =  [ip for ip in icon if userid in ip]
-        mediapath = [mp for mp in media if userid in mp]
+        mediapath = []
+        if "attachments" in data["data"][i].keys():
+            newnum = len(data["data"][i]["attachments"]["media_keys"])
+            for i in range(umlist[userid], newnum):
+                mediapath.append(userid+"image{}".format(i))
+                
+            umlist[userid] += newnum    #mediakeyの個数を更新
 
         format = {'ツイートリンク': "https://twitter.com/{}/status/{}".format(userid, TweetLinkid), 'ツイート内容': "{}".format(Tweet), 'bio文': "{}".format(bio), '投稿時間': "{}".format(TweetTime), 'アイコン画像のpath': "{}".format(iconpath), "投稿画像のpath": "{}".format(mediapath)}
         #print(format)
@@ -44,7 +54,7 @@ def main():
     
         
     try:
-        with open('csv_test.csv', 'wt', encoding='utf-8') as f:
+        with open('csv_test1.csv', 'wt', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=labels)
             writer.writeheader()
             for elem in dct_arr:
