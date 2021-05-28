@@ -57,7 +57,7 @@ def main():
     
         
     try:
-        with open('csv_test1.csv', 'wt', encoding='utf-8') as f:
+        with open('csv_test1.csv', 'wt', encoding='utf-8', newline="") as f:
             writer = csv.DictWriter(f, fieldnames=labels)
             writer.writeheader()
             for elem in dct_arr:
